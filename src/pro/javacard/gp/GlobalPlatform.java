@@ -942,22 +942,27 @@ public class GlobalPlatform {
 
 		// Check if factory keys
 		List<GPKey> tmpl = getKeyInfoTemplate();
-		if ((tmpl.get(0).getVersion() < 1 || tmpl.get(0).getVersion() > 0x7F) && replace) {
-			printStrictWarning("Trying to replace factory keys, when you need to add new ones? Is this a virgin card? (use --virgin)");
-		}
+		if (tmpl.size() > 0) {
+			// Only do the following if we actually have key info templates.
+			// Feitian eJava cards are shipped without keys using the FF version. No keys, no key info templates.
 
-		// Check if key types and lengths are the same when replacing
-		if (replace && (keys.get(0).getType() != tmpl.get(0).getType() || keys.get(0).getLength() != tmpl.get(0).getLength())) {
-			throw new IllegalArgumentException("Can not replace keys of different type or size.");
-		}
+			if ((tmpl.get(0).getVersion() < 1 || tmpl.get(0).getVersion() > 0x7F) && replace) {
+				printStrictWarning("Trying to replace factory keys, when you need to add new ones? Is this a virgin card? (use --virgin)");
+			}
 
-		// Check for matching version numbers if replacing and vice versa
-		if (!replace && (keys.get(0).getVersion() == tmpl.get(0).getVersion())) {
-			throw new IllegalArgumentException("Not adding keys and version matches existing?");
-		}
+			// Check if key types and lengths are the same when replacing
+			if (replace && (keys.get(0).getType() != tmpl.get(0).getType() || keys.get(0).getLength() != tmpl.get(0).getLength())) {
+				throw new IllegalArgumentException("Can not replace keys of different type or size.");
+			}
 
-		if (replace && (keys.get(0).getVersion() != tmpl.get(0).getVersion())) {
-			throw new IllegalArgumentException("Replacing keys and versions don't match existing?");
+			// Check for matching version numbers if replacing and vice versa
+			if (!replace && (keys.get(0).getVersion() == tmpl.get(0).getVersion())) {
+				throw new IllegalArgumentException("Not adding keys and version matches existing?");
+			}
+
+			if (replace && (keys.get(0).getVersion() != tmpl.get(0).getVersion())) {
+				throw new IllegalArgumentException("Replacing keys and versions don't match existing?");
+			}
 		}
 
 		// Construct APDU
